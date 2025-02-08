@@ -1,5 +1,5 @@
 ; --- Auto-Updating AHK Script ---
-CurrentVersion := "1.3.0"
+CurrentVersion := "1.4.0"
 VersionCheckURL := "https://raw.githubusercontent.com/Vortex7171/MyAHKScript/main/version.txt"
 DownloadURL := "https://raw.githubusercontent.com/Vortex7171/MyAHKScript/main/myscript.ahk"
 
@@ -22,6 +22,7 @@ SpeedChoice := (SpeedChoice = "1 (Slow)") ? 200 : (SpeedChoice = "2 (Medium)") ?
 ProcessCompleted := False  ; Ensure the process is not marked as complete yet
 
 If (AutoMode) {
+    MsgBox, Press OK when you see the intermission box.
     Gosub, StartMacro
 } Else {
     MsgBox, Press P to start the macro.
