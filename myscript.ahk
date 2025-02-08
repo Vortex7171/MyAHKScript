@@ -1,5 +1,5 @@
 ; --- Auto-Updating AHK Script ---
-CurrentVersion := "1.0.0"  ; Your script's current version
+CurrentVersion := "1.1.0"  ; Your script's current version
 
 ; GitHub raw URLs (Replace with your actual GitHub repo details)
 VersionCheckURL := "https://raw.githubusercontent.com/Vortex7171/MyAHKScript/main/version.txt"
@@ -44,7 +44,7 @@ If (LatestVersion != "" && LatestVersion != CurrentVersion) {
 ; --- GUI Creation ---
 Gui, Add, Edit, vCountryName w200, Enter Country  ; Input box for country name
 Gui, Add, Text,, Select Speed:
-Gui, Add, DropDownList, vSpeedChoice, 1 (Slow)|2 (Medium)|3 (Fast)  ; Speed selection
+Gui, Add, DropDownList, vSpeedChoice, 1 (Slow)|2 (Medium)|3 (Fast)|4 (Insanely Fast)  ; Speed selection
 Gui, Add, Button, gStartMacro, OK  ; Button to confirm input
 Gui, Show, w250, Enter Country & Speed
 Return
@@ -58,8 +58,10 @@ If (SpeedChoice = 1)
     SpeedDelay := 200  ; Slow
 Else If (SpeedChoice = 2)
     SpeedDelay := 100  ; Medium
-Else
+Else If (SpeedChoice = 3)
     SpeedDelay := 50   ; Fast
+Else
+    SpeedDelay := 0    ; Insanely Fast (no delay)
 
 MsgBox, Ready! When you're ready, press 'P' to select the country.
 Return
@@ -74,13 +76,11 @@ p::  ; Press 'P' to start automation
     Click
     Sleep, SpeedDelay
     
-    Send, ^a  ; Select all text
+    ; Paste the country name instantly
+    Clipboard := CountryName
     Sleep, SpeedDelay
-    Send, {Backspace}  ; Clear text
-    Sleep, SpeedDelay
-    
-    ; Type the country name
-    Send, %CountryName%
+    Send, ^v  ; Paste from clipboard
+
     Sleep, SpeedDelay * 2  ; Slightly longer delay
     
     ; Click first country in list
