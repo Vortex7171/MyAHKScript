@@ -1,5 +1,5 @@
 ; --- Auto-Updating AHK Script ---
-CurrentVersion := "1.2.0"
+CurrentVersion := "1.3.0"
 VersionCheckURL := "https://raw.githubusercontent.com/Vortex7171/MyAHKScript/main/version.txt"
 DownloadURL := "https://raw.githubusercontent.com/Vortex7171/MyAHKScript/main/myscript.ahk"
 
@@ -7,60 +7,73 @@ DownloadURL := "https://raw.githubusercontent.com/Vortex7171/MyAHKScript/main/my
 Gui, Add, Edit, vCountryName w200, Enter Country
 Gui, Add, Text,, Select Speed:
 Gui, Add, DropDownList, vSpeedChoice, 1 (Slow)|2 (Medium)|3 (Fast)|4 (Insanely Fast)
-Gui, Add, Button, gStartMacro, OK
+Gui, Add, Checkbox, vAutoMode, Enable Auto Mode
+Gui, Add, Button, gConfirm, OK  ; Calls Confirm when clicked
 Gui, Show, w250, Enter Country & Speed
 Return
 
-StartMacro:
+Confirm:
 Gui, Submit, NoHide
 Gui, Destroy
 
 ; Set speed based on user selection
-If (SpeedChoice = "1 (Slow)")
-    SpeedDelay := 200
-Else If (SpeedChoice = "2 (Medium)")
-    SpeedDelay := 100
-Else If (SpeedChoice = "3 (Fast)")
-    SpeedDelay := 50
-Else
-    SpeedDelay := 0
+SpeedChoice := (SpeedChoice = "1 (Slow)") ? 200 : (SpeedChoice = "2 (Medium)") ? 100 : (SpeedChoice = "3 (Fast)") ? 50 : 0
 
-MsgBox, Press OK when you see the intermission box. The script will then start monitoring.
+ProcessCompleted := False  ; Ensure the process is not marked as complete yet
 
-; Start monitoring for the intermission box
+If (AutoMode) {
+    Gosub, StartMacro
+} Else {
+    MsgBox, Press P to start the macro.
+}
+
+Return
+
+StartMacro:
+If (ProcessCompleted) {
+    MsgBox, The macro has already completed.
+    Return
+}
+
+ProcessCompleted := True  ; Prevents re-triggering
+
+; Start monitoring
 Loop {
+    IfWinExist, Roblox
+        WinActivate  ; Activate only if not already active
     PixelGetColor, color, 1036, 547, RGB
-    ; Skip tooltip and just perform the check faster
+    
     if (color = "0x272F38") {
-        ; Sleep a short time before checking again
-        Sleep, 10
-        continue
+        Sleep, 50  ; Faster checking
+        Continue
     }
-
-    ; Intermission ended - Proceed with selection
-    break
+    
+    Break
 }
 
 ; Start the country selection process
-Sleep, SpeedDelay
+Clipboard := CountryName ; Put country name in clipboard
+Sleep, SpeedChoice  
 
-; Move to and click search bar (adjusted for speed)
+; Move to and click search bar
 MouseMove, 285, 627
 Click
-Sleep, SpeedDelay
+Sleep, SpeedChoice
 
-; Paste the country name instantly
-Clipboard := CountryName
+; Paste the country name
 Send, ^v
-Sleep, SpeedDelay
+Sleep, SpeedChoice * 2
 
-; Click first country in list
+; Click first country in list and Play
 Click, 208, 650
-Sleep, SpeedDelay
-
-; Click Play button
 Click, 959, 963
 
 ExitApp
+
+p::
+If (!ProcessCompleted) {
+    Gosub, StartMacro
+}
+Return
 
 Esc::ExitApp  ; Press Escape to exit the script
