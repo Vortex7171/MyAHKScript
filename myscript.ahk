@@ -3,6 +3,21 @@ CurrentVersion := "1.4.0"
 VersionCheckURL := "https://raw.githubusercontent.com/Vortex7171/MyAHKScript/main/version.txt"
 DownloadURL := "https://raw.githubusercontent.com/Vortex7171/MyAHKScript/main/myscript.ahk"
 
+; --- Check for Updates ---
+UrlDownloadToFile, %VersionCheckURL%, version.txt
+FileRead, LatestVersion, version.txt
+LatestVersion := Trim(LatestVersion)
+
+If (LatestVersion != CurrentVersion) {
+    MsgBox, 48, Update Available, A new version (%LatestVersion%) is available!`nWould you like to update now?
+    IfMsgBox, Yes
+    {
+        UrlDownloadToFile, %DownloadURL%, myscript.ahk
+        MsgBox, Update complete! Please restart the script.
+        ExitApp
+    }
+}
+
 ; --- GUI Creation ---
 Gui, Add, Edit, vCountryName w200, Enter Country
 Gui, Add, Text,, Select Speed:
