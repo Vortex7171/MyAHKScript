@@ -3,7 +3,7 @@ CurrentVersion := "1.0.0"  ; Your script's current version
 
 ; GitHub raw URLs (Replace with your actual GitHub repo details)
 VersionCheckURL := "https://raw.githubusercontent.com/Vortex7171/MyAHKScript/refs/heads/main/version.txt"
-DownloadURL := "https://raw.githubusercontent.com/yourusername/MyAHKScript/main/myscript.ahk"
+DownloadURL := "https://raw.githubusercontent.com/Vortex7171/MyAHKScript/refs/heads/main/myscript.ahk"
 
 ; Check for an update
 UrlDownloadToFile, %VersionCheckURL%, version.txt
