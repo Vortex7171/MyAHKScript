@@ -1,5 +1,5 @@
 ; --- Auto-Updating AHK Script ---
-CurrentVersion := "1.8.0"  ; Your script's current version
+CurrentVersion := "1.9.0"  ; Your script's current version
 
 ; GitHub raw URLs (Replace with your actual GitHub repo details)
 VersionCheckURL := "https://raw.githubusercontent.com/Vortex7171/MyAHKScript/main/version.txt"
@@ -86,21 +86,23 @@ Loop {
 }
 
 ; Start the country selection process
-Clipboard := CountryName ; Put country name in clipboard
+Clipboard := CountryName  ; Copy country name to clipboard
 Sleep, SpeedChoice  
 
-; Move to and click search bar
-MouseMove, 285, 627
-Click
+; Instantly Click on the Search Bar
+MouseClick, left, 285, 627
 Sleep, SpeedChoice
 
 ; Paste the country name
 Send, ^v
 Sleep, SpeedChoice * 2
 
-; Click first country in list and Play
-Click, 208, 650
-Click, 959, 963
+; Instantly Click first country in list
+MouseClick, left, 208, 650
+Sleep, SpeedChoice * 2
+
+; Instantly Click Play button
+MouseClick, left, 959, 963
 
 ExitApp
 
