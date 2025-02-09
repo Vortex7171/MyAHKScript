@@ -2,14 +2,59 @@
 #NoEnv
 SendMode Input
 SetWorkingDir %A_ScriptDir%
+#SingleInstance Force
 
-CurrentVersion := "1.6.0"  ; Your script's current version
+CurrentVersion := "1.7.0"  ; Your script's current version
 
 ; GitHub raw URLs (Replace with your actual GitHub repo details)
 VersionCheckURL := "https://raw.githubusercontent.com/Vortex7171/MyAHKScript/main/version.txt"
 DownloadURL := "https://raw.githubusercontent.com/Vortex7171/MyAHKScript/main/myscript.ahk"
 
-; Check for an update
+; Function to check for updates
+CheckForUpdate() {
+    global CurrentVersion, VersionCheckURL, DownloadURL
+
+    ; Download the latest version file
+    UrlDownloadToFile, %VersionCheckURL%, version.txt
+    if (ErrorLevel) {
+        MsgBox, Failed to check for updates. Please check your internet connection.
+        return
+    }
+
+    ; Read the latest version
+    FileRead, LatestVersion, version.txt
+    FileDelete, version.txt  ; Clean up temp file
+
+    ; Remove newline if present
+    LatestVersion := Trim(LatestVersion, "`r`n")
+
+    ; Compare versions
+    if (LatestVersion != "" && LatestVersion != CurrentVersion) {
+        MsgBox, 4, Update Available, An update (v%LatestVersion%) is available! Would you like to download it now?
+        IfMsgBox Yes
+        {
+            ; Download the updated script
+            UrlDownloadToFile, %DownloadURL%, update.ahk
+            if (ErrorLevel || !FileExist("update.ahk")) {
+                MsgBox, Update download failed! Please try again later.
+                return
+            }
+
+            ; Replace the current script with the new one
+            FileMove, update.ahk, %A_ScriptFullPath%, 1
+            if (ErrorLevel || !FileExist(A_ScriptFullPath)) {
+                MsgBox, Update failed! Running old version.
+                return
+            }
+
+            MsgBox, Update complete! Restarting script...
+            Run, %A_ScriptFullPath%  ; Restart script
+            ExitApp
+        }
+    }
+}
+
+; Call the update check function
 CheckForUpdate()
 
 ; --- GUI Creation ---
@@ -87,53 +132,3 @@ If (!ProcessCompleted) {
 Return
 
 Esc::ExitApp  ; Press Escape to exit the script
-
-; --- Functions ---
-CheckForUpdate() {
-    global CurrentVersion, VersionCheckURL, DownloadURL
-
-    ; Download the version file
-    UrlDownloadToFile, %VersionCheckURL%, version.txt
-    if ErrorLevel {
-        MsgBox, Failed to check for updates. Please check your internet connection.
-        Return
-    }
-
-    ; Read the latest version
-    FileRead, LatestVersion, version.txt
-    FileDelete, version.txt  ; Clean up temp file
-
-    ; Remove newline if present
-    StringTrimRight, LatestVersion, LatestVersion, 1
-
-    ; Compare versions
-    If (LatestVersion != "" && LatestVersion != CurrentVersion) {
-        MsgBox, 4, Update Available, An update (v%LatestVersion%) is available! Would you like to download it now?
-        IfMsgBox Yes
-        {
-            ; Download the updated script
-            UrlDownloadToFile, %DownloadURL%, update.ahk
-            if ErrorLevel {
-                MsgBox, Update download failed! Exiting...
-                ExitApp
-            }
-
-            ; Ensure update is downloaded
-            if !FileExist("update.ahk") {
-                MsgBox, Update failed! Running old version.
-                Return
-            }
-
-            ; Replace the current script with the new one
-            FileMove, update.ahk, %A_ScriptFullPath%, 1
-            if !FileExist(A_ScriptFullPath) {  
-                MsgBox, Update failed! Running old version.
-                Return
-            }
-
-            MsgBox, Update complete! Restarting script...
-            Run, %A_ScriptFullPath%  ; Restart script
-            ExitApp
-        }
-    }
-}
