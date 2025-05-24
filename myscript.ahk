@@ -1,5 +1,5 @@
 ; --- Auto-Updating AHK Script ---
-CurrentVersion := "2.1.5"
+CurrentVersion := "2.0.6"
 
 VersionCheckURL := "https://raw.githubusercontent.com/Vortex7171/MyAHKScript/main/version.txt"
 DownloadURL := "https://raw.githubusercontent.com/Vortex7171/MyAHKScript/main/myscript.ahk"
@@ -69,20 +69,6 @@ If (ProcessCompleted) {
 }
 ProcessCompleted := True
 
-; Ensure fullscreen (F11) is pressed
-IfWinExist, Roblox
-{
-    WinGet, Style, Style, Roblox
-    ; Check if not fullscreen (0xC40000 = WS_CAPTION | WS_SYSMENU | WS_THICKFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX)
-    if (Style & 0xC40000)
-    {
-        WinActivate
-        Sleep, 200
-        Send, {F11}
-        Sleep, 500
-    }
-}
-
 ; Start monitoring
 Loop {
     IfWinExist, Roblox
@@ -110,7 +96,7 @@ Sleep, SpeedChoice * 2
 MouseClick, left, 212, 607
 Sleep, SpeedChoice * 2
 
-; Click Play Button (705, 940)
+; Click Play Button
 MouseClick, left, 705, 940
 
 ExitApp
