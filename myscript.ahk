@@ -1,5 +1,5 @@
 ; --- Auto-Updating AHK Script ---
-CurrentVersion := "1.9.2"  ; Your script's current version
+CurrentVersion := "1.9.3"  ; Your script's current version
 
 ; GitHub raw URLs
 VersionCheckURL := "https://raw.githubusercontent.com/Vortex7171/MyAHKScript/main/version.txt"
