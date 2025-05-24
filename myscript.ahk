@@ -1,5 +1,5 @@
 ; --- Auto-Updating AHK Script ---
-CurrentVersion := "2.1.9"
+CurrentVersion := "2.2.1"
 
 VersionCheckURL := "https://raw.githubusercontent.com/Vortex7171/MyAHKScript/main/version.txt"
 DownloadURL := "https://raw.githubusercontent.com/Vortex7171/MyAHKScript/main/myscript.ahk"
@@ -37,7 +37,7 @@ Gui, Add, Text,, Select Speed:
 Gui, Add, DropDownList, vSpeedChoice, 1 (Slow)|2 (Medium)|3 (Fast)|4 (Insanely Fast)
 Gui, Add, Checkbox, vAutoMode, Enable Auto Mode
 Gui, Add, Button, gConfirm, OK
-Gui, Add, Text, x10 y+10 cGray, Make sure the game is in fullscreen (F11)
+Gui, Add, Text, x10 y+10 cGray, Make sure the game is NOT in fullscreen (F11)
 Gui, Show, w260 h190, Enter Country & Speed
 Return
 
@@ -45,7 +45,7 @@ Confirm:
 Gui, Submit, NoHide
 Gui, Destroy
 
-; Set speed (adjusted so Fast is now faster and Insanely Fast is fastest)
+; Set speed (adjusted so Fast is faster and Insanely Fast is fastest)
 SpeedChoice := (SpeedChoice = "1 (Slow)") ? 200 
             : (SpeedChoice = "2 (Medium)") ? 100 
             : (SpeedChoice = "3 (Fast)") ? 25 
