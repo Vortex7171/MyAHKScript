@@ -1,115 +1,111 @@
 ; --- Auto-Updating AHK Script ---
-CurrentVersion := "1.9.0"  ; Your script's current version
+CurrentVersion := "1.9.1"
 
-; GitHub raw URLs (Replace with your actual GitHub repo details)
 VersionCheckURL := "https://raw.githubusercontent.com/Vortex7171/MyAHKScript/main/version.txt"
 DownloadURL := "https://raw.githubusercontent.com/Vortex7171/MyAHKScript/main/myscript.ahk"
 
-; Check for an update
+; Check for update
 UrlDownloadToFile, %VersionCheckURL%, version.txt
 FileRead, LatestVersion, version.txt
-FileDelete, version.txt  ; Clean up temp file
+FileDelete, version.txt
+StringTrimRight, LatestVersion, LatestVersion, 1
 
-StringTrimRight, LatestVersion, LatestVersion, 1  ; Remove newline if present
-
-If (LatestVersion != "" && LatestVersion != CurrentVersion) {
+if (LatestVersion != "" && LatestVersion != CurrentVersion) {
     MsgBox, An update (v%LatestVersion%) is available! Downloading now...
-    
-    ; Download the updated script
     UrlDownloadToFile, %DownloadURL%, update.ahk
-    
-    ; Ensure update is downloaded
+
     if !FileExist("update.ahk") {
         MsgBox, Update download failed! Exiting...
         ExitApp
     }
-    
-    ; Replace the current script with the new one
+
     FileMove, update.ahk, %A_ScriptFullPath%, 1
-    if !FileExist(A_ScriptFullPath) {  
+    if !FileExist(A_ScriptFullPath) {
         MsgBox, Update failed! Running old version.
         ExitApp
     }
 
     MsgBox, Update complete! Restarting script...
-    Run, %A_ScriptFullPath%  ; Restart script
+    Run, %A_ScriptFullPath%
     ExitApp
 }
 
 ; --- GUI Creation ---
-Gui, Add, Edit, vCountryName w200, Enter Country  ; Input box for country name
+GuiActive := true
+
+Gui, Add, Edit, vCountryName w200, Enter Country
 Gui, Add, Text,, Select Speed:
-Gui, Add, DropDownList, vSpeedChoice, 1 (Slow)|2 (Medium)|3 (Fast)|4 (Insanely Fast)  ; Speed selection
+Gui, Add, DropDownList, vSpeedChoice, 1 (Slow)|2 (Medium)|3 (Fast)|4 (Insanely Fast)
 Gui, Add, Checkbox, vAutoMode, Enable Auto Mode
-Gui, Add, Button, gConfirm, OK  ; Calls Confirm when clicked
+Gui, Add, Button, gConfirm, OK
 Gui, Show, w250, Enter Country & Speed
 Return
 
 Confirm:
-Gui, Submit, NoHide
+Gui, Submit
 Gui, Destroy
+GuiActive := false
 
-; Set speed based on user selection
 SpeedChoice := (SpeedChoice = "1 (Slow)") ? 200 : (SpeedChoice = "2 (Medium)") ? 100 : (SpeedChoice = "3 (Fast)") ? 50 : 0
+ProcessCompleted := False
 
-ProcessCompleted := False  ; Ensure the process is not marked as complete yet
-
-If (AutoMode) {
+if (AutoMode) {
     MsgBox, Press OK when you see the intermission box.
     Gosub, StartMacro
-} Else {
+} else {
     MsgBox, Press P to start the macro.
 }
-
 Return
 
 StartMacro:
-If (ProcessCompleted) {
+if (ProcessCompleted) {
     MsgBox, The macro has already completed.
     Return
 }
+ProcessCompleted := True
 
-ProcessCompleted := True  ; Prevents re-triggering
+; Ensure mouse uses window-relative coordinates
+CoordMode, Mouse, Window
+CoordMode, Pixel, Screen
 
-; Start monitoring
+; Wait for color change on intermission box
 Loop {
     IfWinExist, Roblox
-        WinActivate  ; Activate only if not already active
+        WinActivate
     PixelGetColor, color, 1036, 547, RGB
-    
     if (color = "0x272F38") {
-        Sleep, 50  ; Faster checking
+        Sleep, 50
         Continue
     }
-    
     Break
 }
 
-; Start the country selection process
-Clipboard := CountryName  ; Copy country name to clipboard
-Sleep, SpeedChoice  
-
-; Instantly Click on the Search Bar
-MouseClick, left, 285, 627
+; Begin input sequence
+Clipboard := CountryName
 Sleep, SpeedChoice
 
-; Paste the country name
+; --- Click updated search bar location ---
+MouseClick, left, 293, 582
+Sleep, SpeedChoice
+
+; Paste
 Send, ^v
 Sleep, SpeedChoice * 2
 
-; Instantly Click first country in list
-MouseClick, left, 208, 650
+; --- Click updated first result ---
+MouseClick, left, 212, 607
 Sleep, SpeedChoice * 2
 
-; Instantly Click Play button
-MouseClick, left, 959, 963
+; --- Click updated play button ---
+MouseClick, left, 2622, 940
 
 ExitApp
 
+; --- Hotkeys ---
 p::
-If (!ProcessCompleted) {
+if (!GuiActive && !ProcessCompleted) {
     Gosub, StartMacro
 }
 Return
 
-Esc::ExitApp  ; Press Escape to exit the script
+Esc::ExitApp
