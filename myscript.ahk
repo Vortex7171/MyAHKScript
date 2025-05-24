@@ -1,17 +1,20 @@
 ; --- Auto-Updating AHK Script ---
-CurrentVersion := "1.9.1"
+CurrentVersion := "1.9.2"  ; Your script's current version
 
+; GitHub raw URLs
 VersionCheckURL := "https://raw.githubusercontent.com/Vortex7171/MyAHKScript/main/version.txt"
 DownloadURL := "https://raw.githubusercontent.com/Vortex7171/MyAHKScript/main/myscript.ahk"
 
-; Check for update
+; Check for an update
 UrlDownloadToFile, %VersionCheckURL%, version.txt
 FileRead, LatestVersion, version.txt
 FileDelete, version.txt
+
 StringTrimRight, LatestVersion, LatestVersion, 1
 
-if (LatestVersion != "" && LatestVersion != CurrentVersion) {
+If (LatestVersion != "" && LatestVersion != CurrentVersion) {
     MsgBox, An update (v%LatestVersion%) is available! Downloading now...
+
     UrlDownloadToFile, %DownloadURL%, update.ahk
 
     if !FileExist("update.ahk") {
@@ -31,8 +34,6 @@ if (LatestVersion != "" && LatestVersion != CurrentVersion) {
 }
 
 ; --- GUI Creation ---
-GuiActive := true
-
 Gui, Add, Edit, vCountryName w200, Enter Country
 Gui, Add, Text,, Select Speed:
 Gui, Add, DropDownList, vSpeedChoice, 1 (Slow)|2 (Medium)|3 (Fast)|4 (Insanely Fast)
@@ -42,33 +43,32 @@ Gui, Show, w250, Enter Country & Speed
 Return
 
 Confirm:
-Gui, Submit
+Gui, Submit, NoHide
 Gui, Destroy
-GuiActive := false
 
 SpeedChoice := (SpeedChoice = "1 (Slow)") ? 200 : (SpeedChoice = "2 (Medium)") ? 100 : (SpeedChoice = "3 (Fast)") ? 50 : 0
 ProcessCompleted := False
 
-if (AutoMode) {
+If (AutoMode) {
     MsgBox, Press OK when you see the intermission box.
     Gosub, StartMacro
-} else {
+} Else {
     MsgBox, Press P to start the macro.
 }
+
 Return
 
 StartMacro:
-if (ProcessCompleted) {
+If (ProcessCompleted) {
     MsgBox, The macro has already completed.
     Return
 }
 ProcessCompleted := True
 
-; Ensure mouse uses window-relative coordinates
+; --- Ensure window-relative mouse movement ---
 CoordMode, Mouse, Window
 CoordMode, Pixel, Screen
 
-; Wait for color change on intermission box
 Loop {
     IfWinExist, Roblox
         WinActivate
@@ -80,32 +80,30 @@ Loop {
     Break
 }
 
-; Begin input sequence
 Clipboard := CountryName
 Sleep, SpeedChoice
 
-; --- Click updated search bar location ---
+; Click updated Search Bar location
 MouseClick, left, 293, 582
 Sleep, SpeedChoice
 
-; Paste
+; Paste country
 Send, ^v
 Sleep, SpeedChoice * 2
 
-; --- Click updated first result ---
+; Click updated First Result location
 MouseClick, left, 212, 607
 Sleep, SpeedChoice * 2
 
-; --- Click updated play button ---
-MouseClick, left, 2622, 940
+; Click original Play Button location (unchanged)
+MouseClick, left, 959, 963
 
 ExitApp
 
-; --- Hotkeys ---
 p::
-if (!GuiActive && !ProcessCompleted) {
+If (!ProcessCompleted) {
     Gosub, StartMacro
 }
 Return
 
-Esc::ExitApp
+Esc::ExitApp  ; Press Escape to exit the script
